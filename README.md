@@ -1,9 +1,9 @@
 # DP-800 Laboratorio 02 - Implement programmability objects with SQL
 
-**Enlace teoría:** https://learn.microsoft.com/en-us/training/modules/implement-programmability-objects/
+**Enlace teoría:** https://learn.microsoft.com/en-us/training/modules/implement-programmability-objects/ <br>
 **Enlace ejercicio:** https://microsoftlearning.github.io/mslearn-sql-developer/Instructions/Labs/02-implement-programmability-objects.html
 
-**Autor:** Christian Salguero Varas
+**Autor:** Christian Salguero Varas <br>
 **Fecha:** 21/09/2026
 
 ---
