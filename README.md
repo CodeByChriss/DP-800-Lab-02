@@ -36,6 +36,8 @@ Pulsamos en ‘Aceptar’ y se nos completarán todos los campos automáticament
 
 ## 2. Verificar la conexión con la base de datos
 
+Para verificar que se ha restaurado correctamente el backup anterior, ejecutamos las siguientes consultas:
+
 ```sql
  -- Verify key tables in AdventureWorksLT
  SELECT TOP (5) CustomerID, FirstName, LastName 
@@ -48,9 +50,13 @@ Pulsamos en ‘Aceptar’ y se nos completarán todos los campos automáticament
  FROM SalesLT.Product;
 ```
 
+![Consultas de comprobación](images/Resultado01.png)
+
 ---
 
 ## 3. Creación de una vista para simplificar las consultas
+
+Ejecutamos el siguiente código para facilitar las consultas del resto de apartados:
 
 ```sql
  CREATE OR ALTER VIEW SalesLT.vCustomerOrders AS
@@ -63,15 +69,23 @@ Pulsamos en ‘Aceptar’ y se nos completarán todos los campos automáticament
  INNER JOIN SalesLT.SalesOrderHeader h ON c.CustomerID = h.CustomerID;
 ```
 
+![Vista creada](images/Resultado02.png)
+
+Realizamos la siguiente consulta para comprobar que se ha creado correctamente:
+
 ```sql
  SELECT TOP (5) * 
  FROM SalesLT.vCustomerOrders 
  ORDER BY OrderDate DESC;
 ```
 
+![Comprobar vista](images/Resultado03.png)
+
 ---
 
 ## 4. Crear un procedimiento almacenado para procesar un pedido
+
+Creamos el siguiente procedimiento para que se cree un pedido automaticamente (inserte los datos en las tablas correspondientes):
 
 ```sql
  CREATE OR ALTER PROCEDURE dbo.AddOrderLineItem
@@ -122,6 +136,10 @@ Pulsamos en ‘Aceptar’ y se nos completarán todos los campos automáticament
  END;
 ```
 
+![Procedimiento creado](images/Resultado04.png)
+
+Llamamos al procedimiento para comprobar que realmente funciona y luego realizamos dos consultas para ver si se ha insertado en las tablas:
+
 ```sql
  -- Add a line item to an existing order (choose a valid SalesOrderID)
  DECLARE @SalesOrderID INT = (SELECT TOP 1 SalesOrderID 
@@ -141,9 +159,13 @@ Pulsamos en ‘Aceptar’ y se nos completarán todos los campos automáticament
  WHERE SalesOrderID = @SalesOrderID;
 ```
 
+![Consulta procedimiento](images/Resultado05.png)
+
 ---
 
 ## 5. Crear una función escalar para cálculos reutilizables
+
+Creamos una función que devuelva el Order Total:
 
 ```sql
      CREATE OR ALTER FUNCTION dbo.fnOrderTotal (@OrderID INT)
@@ -160,6 +182,10 @@ Pulsamos en ‘Aceptar’ y se nos completarán todos los campos automáticament
      END;
 ```
 
+![Función creada](images/Resultado06.png)
+
+Comprobamos con la siguiente consulta:
+
 ```sql
  SELECT d.SalesOrderID, dbo.fnOrderTotal(d.SalesOrderID) AS OrderTotal
  FROM SalesLT.SalesOrderDetail d
@@ -167,9 +193,13 @@ Pulsamos en ‘Aceptar’ y se nos completarán todos los campos automáticament
  ORDER BY d.SalesOrderID DESC;
 ```
 
+![Consulta a la función](images/Resultado07.png)
+
 ---
 
 ## 6. Crear una función con valor de tabla en líneas (TVF)
+
+Creamos una función que nos devuelve una tabla a partir de un SELECT:
 
 ```sql
  CREATE OR ALTER FUNCTION dbo.GetCustomerOrders (@CustomerID INT)
@@ -185,11 +215,19 @@ Pulsamos en ‘Aceptar’ y se nos completarán todos los campos automáticament
  );
 ```
 
+![Función SELECT creada](images/Resultado08.png)
+
+Realizamos la siguiente consulta para el correcto funcionamiento de la función creada:
+
 ```sql
  SELECT * 
  FROM dbo.GetCustomerOrders(29929)
  ORDER BY OrderDate DESC;
 ```
+
+![1 Comprobación función SELECT](images/Resultado09.png)
+
+Otra comprobación más:
 
 ```sql
  SELECT CONCAT(c.FirstName, ' ', c.LastName) AS CustomerName, o.SalesOrderID, o.OrderDate
@@ -198,9 +236,13 @@ Pulsamos en ‘Aceptar’ y se nos completarán todos los campos automáticament
  WHERE c.CustomerID = 29929;
 ```
 
+![2 Comprobación función SELECT](images/Resultado10.png)
+
 ---
 
 ## 7. Crear un desencadenador (trigger) para registrar cambios
+
+Creamos un trigger que al hacer un insrt o udpate en la tabla `SalesOrderDetail` haga un insert en la tabla `OrderAudit`:
 
 ```sql
  -- Audit table
@@ -259,6 +301,10 @@ Pulsamos en ‘Aceptar’ y se nos completarán todos los campos automáticament
  END;
 ```
 
+![Trigger creado](images/Resultado11.png)
+
+Comprobamos el funcionamiento del trigger con el siguiente UPDATE y SELECT:
+
 ```sql
  -- Update an order detail to change the total
  UPDATE d
@@ -270,3 +316,5 @@ Pulsamos en ‘Aceptar’ y se nos completarán todos los campos automáticament
  FROM dbo.OrderAudit 
  ORDER BY AuditID DESC;
 ```
+
+![Comprobación del trigger](images/Resultado12.png)
